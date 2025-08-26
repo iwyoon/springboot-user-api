@@ -80,7 +80,7 @@ public class UserService {
 
 
 	/**
-	 * 주소에서 행정구역 추출
+	 * 주소에서 큰 단위의 행정구역 단어
 	 */
 	private String extractRegion(String address) {
 		if (address == null || address.isEmpty()) return "";
