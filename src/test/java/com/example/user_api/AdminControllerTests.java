@@ -2,7 +2,6 @@ package com.example.user_api;
 
 import com.example.user_api.domain.User;
 import com.example.user_api.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 
@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AdminControllerTests {
 
 	@Autowired
@@ -27,30 +28,13 @@ class AdminControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	private String basicAuth;
 
 	@BeforeEach
 	void setUp() {
-		userRepository.deleteAll();
-
-		// admin 계정
-		User admin = new User();
-		admin.setAccount("admin");
-		admin.setPassword(new BCryptPasswordEncoder().encode("1212"));
-		admin.setName("관리자");
-		admin.setSsn("00000000000");
-		admin.setPhone("01000000000");
-		admin.setAddress("서울특별시 중구");
-		admin.setRole("ADMIN");
-		userRepository.save(admin);
-
-		// 일반 사용자
 		User user = new User();
-		user.setAccount("user1");
-		user.setPassword(new BCryptPasswordEncoder().encode("pass1"));
+		user.setAccount("testuser");
+		user.setPassword(new BCryptPasswordEncoder().encode("password"));
 		user.setName("홍길동");
 		user.setSsn("12345678901");
 		user.setPhone("01012345678");
@@ -58,7 +42,7 @@ class AdminControllerTests {
 		user.setRole("USER");
 		userRepository.save(user);
 
-		// Basic Auth 헤더 (admin 계정 기준)
+		// Basic Auth 헤더 (admin 계정)
 		basicAuth = "Basic " + Base64.getEncoder().encodeToString("admin:1212".getBytes());
 	}
 
@@ -70,7 +54,7 @@ class AdminControllerTests {
 				.param("size", "10"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content[0].account").value("admin"))
-			.andExpect(jsonPath("$.content[1].account").value("user1"));
+			.andExpect(jsonPath("$.content[1].account").value("testuser"));
 	}
 
 	@Test
