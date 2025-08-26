@@ -27,7 +27,7 @@ public class User {
 	@Column(nullable = false)
 	private String name;
 
-	@Column(unique = true, nullable = false, length = 11)
+	@Column(unique = true, nullable = false, length = 13)
 	private String ssn;
 
 	@Column(nullable = false, length = 11)

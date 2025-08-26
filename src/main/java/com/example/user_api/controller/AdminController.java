@@ -1,13 +1,17 @@
 package com.example.user_api.controller;
 
 import com.example.user_api.domain.User;
+import com.example.user_api.dto.MessageRequest;
 import com.example.user_api.dto.SignupRequest;
 import com.example.user_api.service.AdminService;
 
+import com.example.user_api.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
 	private final AdminService adminService;
+	private final MessageService messageService;
 
 	/**
 	 * 회원 조회
@@ -43,5 +48,17 @@ public class AdminController {
 	public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
 		adminService.deleteUser(id);
 		return ResponseEntity.ok("삭제 완료");
+	}
+
+	/**
+	 * 메시지 전송
+	 */
+	@PostMapping("/messages/send")
+	public ResponseEntity<String> sendMessages(@RequestBody MessageRequest request) {
+		String ageGroup = request.getAgeGroup();
+		List<User> members = adminService.getUsersByAgeGroup(ageGroup);
+
+		members.forEach(user -> messageService.sendMessage(user.getName(), user.getPhone(), request.getMessage()));
+		return ResponseEntity.ok("발송 시작");
 	}
 }

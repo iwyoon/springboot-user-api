@@ -1,7 +1,9 @@
 package com.example.user_api;
 
 import com.example.user_api.domain.User;
+import com.example.user_api.dto.MessageRequest;
 import com.example.user_api.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ class AdminControllerTests {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	private String basicAuth;
 
 	@BeforeEach
@@ -36,7 +41,7 @@ class AdminControllerTests {
 		user.setAccount("testuser");
 		user.setPassword(new BCryptPasswordEncoder().encode("password"));
 		user.setName("홍길동");
-		user.setSsn("12345678901");
+		user.setSsn("0102033456789");
 		user.setPhone("01012345678");
 		user.setAddress("서울특별시 강남구");
 		user.setRole("USER");
@@ -97,5 +102,21 @@ class AdminControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content.length()").value(1))
 			.andExpect(jsonPath("$.content[0].account").value("admin"));
+	}
+
+	@Test
+	void testSendMessages() throws Exception {
+		MessageRequest request = new MessageRequest();
+		request.setAgeGroup("20s");  // 20대만 필터링
+		request.setMessage("이번 주 이벤트 안내");
+
+		String json = objectMapper.writeValueAsString(request);
+
+		mockMvc.perform(post("/api/admin/messages/send")
+						.header("Authorization", basicAuth)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().string("발송 시작"));
 	}
 }
