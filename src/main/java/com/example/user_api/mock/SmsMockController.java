@@ -4,12 +4,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/sms")
 public class SmsMockController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SmsMockController.class);
 
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -20,7 +24,7 @@ public class SmsMockController {
         String message = formData.getFirst("message");
         if (message == null) message = "";
 
-        System.out.println("[SMS 모킹] phone: " + phone + ", message: " + message);
+        logger.info("[SMS 모킹] phone: " + phone + ", message: " + message);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

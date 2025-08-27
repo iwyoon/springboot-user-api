@@ -18,7 +18,7 @@ public class MessageServiceTests {
 		String message = "테스트";
 
 		for (int i = 1; i <= 120; i++) {  // 120건 호출
-			messageService.sendMessage("홍길동", phone, message + " " + i);
+			messageService.sendKakao("홍길동", phone, message + " " + i);
 		}
 	}
 }

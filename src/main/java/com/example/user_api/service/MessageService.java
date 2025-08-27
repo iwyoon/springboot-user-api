@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +24,8 @@ import com.example.user_api.dto.MessageRequest;
 @Service
 @RequiredArgsConstructor
 public class MessageService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
     private final RateLimiterService rateLimiterService;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -59,7 +63,7 @@ public class MessageService {
             sendSms(req.getName(), req.getPhone(), req.getMessage());
         }
 
-        System.out.println("[큐 상태] 카톡: " + kakaoRetryQueue.size() + ", SMS: " + smsRetryQueue.size());
+        logger.info("[큐 상태] 카톡: " + kakaoRetryQueue.size() + ", SMS: " + smsRetryQueue.size());
     }
 
     /**
@@ -83,14 +87,13 @@ public class MessageService {
             try {
                 callKakaoApi(phone, content);
             } catch (Exception e) {
-                System.out.println("[카톡 실패 - API 오류] " + phone);
+                logger.error("[카톡 실패 - API 오류] " + phone);
                 // 카톡 실패 시 SMS 시도
                 sendSms(name, phone, content);
             }
         } else {
             // 카톡 Rate Limit 초과 → 재시도 큐에 추가
             kakaoRetryQueue.add(new MessageRequest(name, phone, content, LocalDateTime.now().plusMinutes(1)));
-            System.out.println("[카톡 Rate Limit 초과] 재시도 큐에 추가: " + phone);
         }
     }
 
@@ -120,12 +123,11 @@ public class MessageService {
             try {
                 callSmsApi(phone, message);
             } catch (Exception e) {
-                System.out.println("[SMS 실패 - API 오류] " + phone);
+                logger.error("[SMS 실패 - API 오류] " + phone);
             }
         } else {
             // SMS Rate Limit 초과 → 재시도 큐에 추가
             smsRetryQueue.add(new MessageRequest(name, phone, message, LocalDateTime.now().plusMinutes(1)));
-            System.out.println("[SMS Rate Limit 초과] 재시도 큐에 추가: " + phone);
         }
     }
 

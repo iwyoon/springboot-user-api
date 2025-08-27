@@ -25,9 +25,6 @@ public class RateLimiterService {
             redisTemplate.expire(key, Duration.ofSeconds(ttlSeconds));
         }
 
-        Long ttl = redisTemplate.getExpire(key);
-        System.out.println("[RateLimiter] key: " + key + ", count: " + count + "/" + limit + ", TTL: " + ttl + "초");
-
         return count <= limit;
     }
 
