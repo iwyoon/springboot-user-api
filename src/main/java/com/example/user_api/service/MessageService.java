@@ -98,7 +98,7 @@ public class MessageService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             Map<String, String> body = Map.of("phone", phone, "message", content);
-            restTemplate.postForEntity("http://localhost:8080/kakaotalk-messages",
+            restTemplate.postForEntity("http://localhost:8081/kakaotalk-messages",
                     new HttpEntity<>(body, headers), Void.class);
         } catch (Exception e) {
             logger.error("[카카오톡 전송 실패] " + phone);
@@ -128,7 +128,7 @@ public class MessageService {
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("message", message);
 
-            restTemplate.postForEntity("http://localhost:8080/sms?phone=" + phone,
+            restTemplate.postForEntity("http://localhost:8082/sms?phone=" + phone,
                     new HttpEntity<>(body, headers), Map.class);
         } catch (Exception e) {
             logger.error("[SMS 전송 실패] " + phone);

@@ -24,7 +24,7 @@ docker-compose up -d
 
 ####  MySQL
 - Host: localhost
-- Port: 3306
+- Port: 3307
 - Database: userdb
 - User: user
 - Password: pass
@@ -166,10 +166,31 @@ GET /admin/users?page=0&size=10
       "role": "USER"
     }
   ],
-  "totalPages": 1,
-  "totalElements": 1,
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 10,
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": false,
+  "totalElements": 9002,
+  "totalPages": 901,
+  "first": true,
+  "size": 10,
   "number": 0,
-  "size": 10
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "numberOfElements": 10,
+  "empty": false
 }
 ```
 

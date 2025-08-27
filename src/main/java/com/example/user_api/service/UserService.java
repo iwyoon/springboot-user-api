@@ -23,10 +23,10 @@ public class UserService {
 	 * 회원가입
 	 *
 	 * @param request 회원가입 요청 DTO
-	 * @return 저장된 User 엔티티
+	 * @return 저장된 회원 UserDetailResponse
 	 * @throws RuntimeException 이미 사용 중인 계정 또는 주민등록번호가 존재할 경우
 	 */
-	public User signup(SignupRequest request) {
+	public UserDetailResponse signup(SignupRequest request) {
 		if (userRepository.existsByAccount(request.getAccount())) {
 			throw new RuntimeException("이미 사용 중인 계정입니다.");
 		}
@@ -43,7 +43,17 @@ public class UserService {
 		user.setAddress(request.getAddress());
 		user.setRole("USER");
 
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+
+		// User → UserDetailResponse 변환
+		UserDetailResponse response = new UserDetailResponse();
+		response.setAccount(savedUser.getAccount());
+		response.setName(savedUser.getName());
+		response.setSsn(savedUser.getSsn());
+		response.setPhone(savedUser.getPhone());
+		response.setAddress(savedUser.getAddress()); // 필요 시 extractRegion(savedUser.getAddress()) 적용
+
+		return response;
 	}
 
 	/**

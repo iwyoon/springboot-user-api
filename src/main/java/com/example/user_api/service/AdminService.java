@@ -1,5 +1,6 @@
 package com.example.user_api.service;
 
+import com.example.user_api.dto.UserDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +30,18 @@ public class AdminService {
 	 * @param size 페이지 크기
 	 * @return Page<User> 객체
 	 */
-	public Page<User> getUsers(int page, int size) {
-		return userRepository.findAll(PageRequest.of(page, size));
+	public Page<UserDetailResponse> getUsers(int page, int size) {
+		Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+
+		return users.map(user -> {
+			UserDetailResponse dto = new UserDetailResponse();
+			dto.setAccount(user.getAccount());
+			dto.setName(user.getName());
+			dto.setSsn(user.getSsn());
+			dto.setPhone(user.getPhone());
+			dto.setAddress(user.getAddress()); // 필요 시 extractRegion(user.getAddress()) 적용
+			return dto;
+		});
 	}
 
 	/**
@@ -41,7 +52,7 @@ public class AdminService {
 	 * @return 수정된 User 객체
 	 * @throws RuntimeException 회원이 존재하지 않을 경우
 	 */
-	public User updateUser(Long id, SignupRequest request) {
+	public UserDetailResponse updateUser(Long id, SignupRequest request) {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
@@ -52,7 +63,16 @@ public class AdminService {
 			user.setAddress(request.getAddress());
 		}
 
-		return userRepository.save(user);
+		User updatedUser = userRepository.save(user);
+
+		UserDetailResponse response = new UserDetailResponse();
+		response.setAccount(updatedUser.getAccount());
+		response.setName(updatedUser.getName());
+		response.setSsn(updatedUser.getSsn());
+		response.setPhone(updatedUser.getPhone());
+		response.setAddress(updatedUser.getAddress());
+
+		return response;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.example.user_api.controller;
 import com.example.user_api.domain.User;
 import com.example.user_api.dto.SendRequest;
 import com.example.user_api.dto.SignupRequest;
+import com.example.user_api.dto.UserDetailResponse;
 import com.example.user_api.service.AdminService;
 
 import com.example.user_api.service.MessageService;
@@ -29,7 +30,7 @@ public class AdminController {
 	 * @return 회원 목록
 	 */
 	@GetMapping("/users")
-	public ResponseEntity<Page<User>> getUsers(
+	public ResponseEntity<Page<UserDetailResponse>> getUsers(
 		@RequestParam(name = "page", defaultValue = "0") int page,
 		@RequestParam(name = "size", defaultValue = "10") int size) {
 		return ResponseEntity.ok(adminService.getUsers(page, size));
@@ -40,10 +41,10 @@ public class AdminController {
 	 *
 	 * @param id 회원 ID
 	 * @param request 회원 수정 DTO
-	 * @return 수정된 User 객체
+	 * @return 수정된 회원 UserDetailResponse
 	 */
 	@PutMapping("/users/{id}")
-	public ResponseEntity<User> updateUser(
+	public ResponseEntity<UserDetailResponse> updateUser(
 		@PathVariable("id") Long id,
 		@RequestBody SignupRequest request) {
 		return ResponseEntity.ok(adminService.updateUser(id, request));

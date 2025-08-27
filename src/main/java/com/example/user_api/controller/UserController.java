@@ -21,11 +21,11 @@ public class UserController {
 	 * 회원가입
 	 *
 	 * @param request 회원가입 요청 DTO
-	 * @return 등록된 User 객체
+	 * @return 저장된 회원 UserDetailResponse
 	 */
 	@PostMapping("/signup")
-	public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
-		User user = userService.signup(request);
+	public ResponseEntity<UserDetailResponse> signup(@RequestBody SignupRequest request) {
+		UserDetailResponse user = userService.signup(request);
 		return ResponseEntity.ok(user);
 	}
 
