@@ -22,10 +22,25 @@ public class AdminService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	/**
+	 * 페이징된 회원 조회
+	 *
+	 * @param page 페이지 번호
+	 * @param size 페이지 크기
+	 * @return Page<User> 객체
+	 */
 	public Page<User> getUsers(int page, int size) {
 		return userRepository.findAll(PageRequest.of(page, size));
 	}
 
+	/**
+	 * 회원 수정
+	 *
+	 * @param id 회원 ID
+	 * @param request 수정 정보 DTO
+	 * @return 수정된 User 객체
+	 * @throws RuntimeException 회원이 존재하지 않을 경우
+	 */
 	public User updateUser(Long id, SignupRequest request) {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -40,6 +55,12 @@ public class AdminService {
 		return userRepository.save(user);
 	}
 
+	/**
+	 * 회원 삭제
+	 *
+	 * @param id 회원 ID
+	 * @throws RuntimeException 회원이 존재하지 않을 경우
+	 */
 	public void deleteUser(Long id) {
 		if (!userRepository.existsById(id)) {
 			throw new RuntimeException("사용자를 찾을 수 없습니다.");
@@ -47,6 +68,12 @@ public class AdminService {
 		userRepository.deleteById(id);
 	}
 
+	/**
+	 * 연령대 기준 회원 조회
+	 *
+	 * @param ageGroup "10s", "20s", ... , "all"
+	 * @return 해당 연령대의 회원 리스트
+	 */
 	public List<User> getUsersByAgeGroup(String ageGroup) {
 		return userRepository.findAll()
 				.stream()
@@ -54,6 +81,13 @@ public class AdminService {
 				.toList();
 	}
 
+	/**
+	 * 주민등록번호 기반 연령대 판단
+	 *
+	 * @param ssn 주민등록번호
+	 * @param ageGroup 연령대 문자열
+	 * @return true: 해당 연령대, false: 아님
+	 */
 	public boolean isInAgeGroup(String ssn, String ageGroup) {
 		int age = getAgeFromSsn(ssn);
 		switch (ageGroup) {
@@ -71,6 +105,12 @@ public class AdminService {
 		}
 	}
 
+	/**
+	 * 주민등록번호에서 나이 계산
+	 *
+	 * @param ssn 주민등록번호
+	 * @return 나이
+	 */
 	public int getAgeFromSsn(String ssn) {
 		try {
 			if (ssn == null || ssn.length() < 8) {

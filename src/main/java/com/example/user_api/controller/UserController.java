@@ -19,6 +19,9 @@ public class UserController {
 
 	/**
 	 * 회원가입
+	 *
+	 * @param request 회원가입 요청 DTO
+	 * @return 등록된 User 객체
 	 */
 	@PostMapping("/signup")
 	public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
@@ -28,6 +31,9 @@ public class UserController {
 
 	/**
 	 * 로그인
+	 *
+	 * @param request 로그인 요청 DTO
+	 * @return 로그인 성공 메시지
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody LoginRequest request) {
@@ -37,6 +43,9 @@ public class UserController {
 
 	/**
 	 * 본인 상세정보 조회
+	 *
+	 * @param authentication 인증 정보
+	 * @return 사용자 상세 정보
 	 */
 	@GetMapping("/me")
 	public ResponseEntity<UserDetailResponse> getMyInfo(Authentication authentication) {

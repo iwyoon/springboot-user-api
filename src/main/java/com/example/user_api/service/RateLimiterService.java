@@ -31,6 +31,12 @@ public class RateLimiterService {
         return count <= limit;
     }
 
+    /**
+     * 특정 key의 현재 카운트 조회
+     *
+     * @param key Redis key
+     * @return 현재 호출 횟수
+     */
     public long getCount(String key) {
         Object count = redisTemplate.opsForValue().get(key);
         if (count instanceof Number) {

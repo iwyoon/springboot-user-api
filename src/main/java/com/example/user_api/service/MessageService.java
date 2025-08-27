@@ -30,6 +30,11 @@ public class MessageService {
     private final Queue<MessageRequest> kakaoRetryQueue = new ConcurrentLinkedQueue<>();
     private final Queue<MessageRequest> smsRetryQueue = new ConcurrentLinkedQueue<>();
 
+    /**
+     * 재시도 큐를 1초마다 처리
+     * - 카톡: 1분 최대 100건
+     * - SMS: 1분 최대 500건
+     */
     @Scheduled(fixedRate = 1000) // 1초마다 체크
     public void processRetryQueue() {
         LocalDateTime now = LocalDateTime.now();
@@ -41,7 +46,7 @@ public class MessageService {
             MessageRequest req = kakaoRetryQueue.peek();
             if (req == null || req.getRetryAt().isAfter(now)) break;
             kakaoRetryQueue.poll();
-            sendMessage(req.getName(), req.getPhone(), req.getMessage());
+            sendKakao(req.getName(), req.getPhone(), req.getMessage());
         }
 
         // SMS 재시도 처리
@@ -57,8 +62,17 @@ public class MessageService {
         System.out.println("[큐 상태] 카톡: " + kakaoRetryQueue.size() + ", SMS: " + smsRetryQueue.size());
     }
 
+    /**
+     * 카카오톡 메시지 전송
+     * - Rate Limit 초과 시 재시도 큐에 적재
+     * - 전송 실패 시 SMS로 대체
+     *
+     * @param name 수신자 이름
+     * @param phone 수신자 전화번호
+     * @param message 메시지 내용
+     */
     @Async
-    public void sendMessage(String name, String phone, String message) {
+    public void sendKakao(String name, String phone, String message) {
         String content = name + "님, 안녕하세요. 현대 오토에버입니다. " + message;
 
         // 카톡 Rate Limit 체크
@@ -90,6 +104,14 @@ public class MessageService {
             new HttpEntity<>(body, headers), Void.class);
     }
 
+    /**
+     * SMS 전송
+     * - Rate Limit 초과 시 재시도 큐에 적재
+     *
+     * @param name 수신자 이름
+     * @param phone 수신자 전화번호
+     * @param message 메시지 내용
+     */
     private void sendSms(String name, String phone, String message) {
         String smsKey = "sms:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
         boolean smsAllowed = rateLimiterService.tryAcquire(smsKey, 500, 60);
