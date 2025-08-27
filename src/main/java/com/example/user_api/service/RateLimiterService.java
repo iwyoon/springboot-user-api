@@ -1,6 +1,7 @@
 package com.example.user_api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RateLimiterService {
 
+    @Qualifier("rateLimiterRedisTemplate")
     private final RedisTemplate<String, Long> redisTemplate;
 
     /**
@@ -26,20 +28,6 @@ public class RateLimiterService {
         }
 
         return count <= limit;
-    }
-
-    /**
-     * 특정 key의 현재 카운트 조회
-     *
-     * @param key Redis key
-     * @return 현재 호출 횟수
-     */
-    public long getCount(String key) {
-        Object count = redisTemplate.opsForValue().get(key);
-        if (count instanceof Number) {
-            return ((Number) count).longValue();
-        }
-        return 0L;
     }
 
 }

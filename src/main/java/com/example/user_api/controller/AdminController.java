@@ -72,7 +72,12 @@ public class AdminController {
 		String ageGroup = request.getAgeGroup();
 		List<User> members = adminService.getUsersByAgeGroup(ageGroup);
 
-		members.forEach(user -> messageService.sendKakao(user.getName(), user.getPhone(), request.getMessage()));
+		int batchSize = 10000;
+		for (int i = 0; i < members.size(); i += batchSize) {
+			List<User> batch = members.subList(i, Math.min(i + batchSize, members.size()));
+			messageService.enqueueBatch(batch, request.getMessage());
+		}
+
 		return ResponseEntity.ok("발송 시작");
 	}
 }
