@@ -24,6 +24,19 @@ public class RateLimiterService {
         if (count == 1) {
             redisTemplate.expire(key, Duration.ofSeconds(ttlSeconds));
         }
+
+        Long ttl = redisTemplate.getExpire(key);
+        System.out.println("[RateLimiter] key: " + key + ", count: " + count + "/" + limit + ", TTL: " + ttl + "초");
+
         return count <= limit;
     }
+
+    public long getCount(String key) {
+        Object count = redisTemplate.opsForValue().get(key);
+        if (count instanceof Number) {
+            return ((Number) count).longValue();
+        }
+        return 0L;
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.example.user_api;
 
 import com.example.user_api.domain.User;
-import com.example.user_api.dto.MessageRequest;
+import com.example.user_api.dto.SendRequest;
 import com.example.user_api.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +106,7 @@ class AdminControllerTests {
 
 	@Test
 	void testSendMessages() throws Exception {
-		MessageRequest request = new MessageRequest();
+		SendRequest request = new SendRequest();
 		request.setAgeGroup("20s");  // 20대만 필터링
 		request.setMessage("이번 주 이벤트 안내");
 

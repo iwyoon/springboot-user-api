@@ -1,7 +1,7 @@
 package com.example.user_api.controller;
 
 import com.example.user_api.domain.User;
-import com.example.user_api.dto.MessageRequest;
+import com.example.user_api.dto.SendRequest;
 import com.example.user_api.dto.SignupRequest;
 import com.example.user_api.service.AdminService;
 
@@ -54,7 +54,7 @@ public class AdminController {
 	 * 메시지 전송
 	 */
 	@PostMapping("/messages/send")
-	public ResponseEntity<String> sendMessages(@RequestBody MessageRequest request) {
+	public ResponseEntity<String> sendMessages(@RequestBody SendRequest request) {
 		String ageGroup = request.getAgeGroup();
 		List<User> members = adminService.getUsersByAgeGroup(ageGroup);
 
